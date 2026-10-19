@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RegretCache</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <h1>RegretCache</h1>
+      <p class="tagline">A cache that learns from its own mistakes.</p>
+    </header>
+
+    <section class="card">
+      <div class="controls">
+        <div class="control">
+          <label for="workload">Workload</label>
+          <select id="workload">
+            <option value="scan_hot" selected>Scan + hot set</option>
+            <option value="zipf">Zipf (skewed traffic)</option>
+            <option value="loop">Loop</option>
+            <option value="shifting">Shifting working set</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="n_requests">Number of requests</label>
+          <div class="range-row">
+            <input type="range" id="n_requests" min="50" max="600" step="10" value="300">
+            <span id="n_requests_val" class="range-val">300</span>
+          </div>
+        </div>
+        <div class="control">
+          <label for="capacity">Cache size (pages)</label>
+          <div class="range-row">
+            <input type="range" id="capacity" min="2" max="32" step="1" value="8">
+            <span id="capacity_val" class="range-val">8</span>
+          </div>
+        </div>
+        <div class="control">
+          <label for="ghost_size">Ghost list size</label>
+          <div class="range-row">
+            <input type="range" id="ghost_size" min="1" max="32" step="1" value="8">
+            <span id="ghost_size_val" class="range-val">8</span>
+          </div>
+          <p class="hint">How many recently evicted pages RegretCache remembers</p>
+        </div>
+        <div class="control">
+          <label for="half_life">Decay half-life</label>
+          <div class="range-row">
+            <input type="range" id="half_life" min="10" max="500" step="10" value="100">
+            <span id="half_life_val" class="range-val">100</span>
+          </div>
+          <p class="hint">Requests for a regret score to halve</p>
+        </div>
+        <div class="control">
+          <label for="seed">Random seed</label>
+          <input type="number" id="seed" min="0" value="42">
+        </div>
+        <div class="control control-button">
+          <button type="button" id="run">Run simulation</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="error" class="error" hidden></div>
+
+    <section class="card">
+      <p id="headline" class="headline"></p>
+      <div class="table-wrap">
+        <table id="results-table">
+          <thead>
+            <tr><th>Policy</th><th>Hits</th><th>Misses</th><th>Hit rate</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="chart-grid">
+      <section class="card">
+        <h2>Misses (lower is better)</h2>
+        <div class="chart-box"><canvas id="chart-misses"></canvas></div>
+      </section>
+      <section class="card">
+        <h2>Hit rate by cache size</h2>
+        <div class="chart-box"><canvas id="chart-sweep"></canvas></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>RegretCache regret rate over time</h2>
+      <div class="chart-box"><canvas id="chart-regret"></canvas></div>
+    </section>
+
+    <section class="card">
+      <h2>Replay</h2>
+      <div class="replay-controls">
+        <label for="replay_policy">Policy</label>
+        <select id="replay_policy">
+          <option value="FIFO">FIFO</option>
+          <option value="LRU">LRU</option>
+          <option value="Optimal">Optimal</option>
+          <option value="RegretCache" selected>RegretCache</option>
+        </select>
+        <button type="button" id="replay_prev">Prev</button>
+        <button type="button" id="replay_play">Play</button>
+        <button type="button" id="replay_next">Next</button>
+      </div>
+      <label for="replay_slider" class="sr-label">Request</label>
+      <input type="range" id="replay_slider" min="1" max="1" value="1">
+      <p id="replay_info" class="replay-info"></p>
+      <div class="row-title">Cache</div>
+      <div id="replay_cache" class="chips"></div>
+      <div id="replay_ghost"></div>
+      <p id="replay_stats" class="muted"></p>
+      <div id="replay_strip" class="strip"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
